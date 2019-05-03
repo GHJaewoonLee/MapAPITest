@@ -24,6 +24,13 @@
 				var exVal = document.getElementById('ex').value;
 				var eyVal = document.getElementById('ey').value;
 
+				var startPath = [new daum.maps.LatLng(syVal, sxVal)];
+				var endPath = [new daum.maps.LatLng(eyVal, exVal)];
+				
+				var intermediatePath;
+				
+				var interj;
+				
 				// Calculate BusLane
 				var xhr = new XMLHttpRequest();
 				var url = site+"searchPubTransPath?apiKey="+okey+"&lang=0&SX="+sxVal+"&SY="+syVal+"&EX="+exVal+"&EY="+eyVal+"&OPT=0&SearchType=0&SearchPathType=2";
@@ -47,6 +54,8 @@
 							str += "<p>도착지 반경 : " + result.endRadius + "</p>";
 							str += "<p>이동 거리 : " + result.pointDistance + "</p>";
 							
+							intermediatePath = Array(result.path.length);
+							
 							for (var i = 0; i < result.path.length; i++) {
 								str += "<p>---------------" + (i + 1) + "번째 경로---------------</p>"
 								str += "<p>" + (i + 1) + "번째 경로의 타입 : " + result.path[i].pathType + " (버스)</p>";
@@ -60,6 +69,9 @@
 								str += "<p>" + (i + 1) + "번째 경로의 도착 정류장 : " + result.path[i].info.lastEndStation + "</p>";
 								str += "<p>" + (i + 1) + "번째 경로의 총 정류장 수 : " + result.path[i].info.totalStationCount + "</p>";
 								str += "<p>" + (i + 1) + "번째 경로의 보정 값 : " + result.path[i].info.mapObj + "</p>";
+								
+								intermediatePath[i] = Array(result.path[i].subPath.length);
+								interj = 0;
 								
 								for (var j = 0; j < result.path[i].subPath.length; j++) {
 									str += "<p>+++++++++++++++세부 경로 : " + (j + 1) + "+++++++++++++++</p>"
@@ -85,6 +97,7 @@
 											str += "<p>버스 타입 : " + result.path[i].subPath[j].lane[k].type + "</p>";
 										}
 										
+										intermediatePath[i][interj] = Array(result.path[i].subPath[j].passStopList.stations.length);
 										for (var k = 0; k < result.path[i].subPath[j].passStopList.stations.length; k++) {
 											str += "<p>***************경로 상세 : " + (k + 1) + "***************</p>";
 											str += "<p>순번 : " + (result.path[i].subPath[j].passStopList.stations[k].index + 1) + "</p>";
@@ -92,7 +105,10 @@
 											str += "<p>정류장 이름 : " + result.path[i].subPath[j].passStopList.stations[k].stationName + "</p>";
 											str += "<p>정류장 X 좌표 : " + result.path[i].subPath[j].passStopList.stations[k].x + "</p>";
 											str += "<p>정류장 Y 좌표 : " + result.path[i].subPath[j].passStopList.stations[k].y + "</p>";
+											intermediatePath[i][interj][k] = new daum.maps.LatLng(result.path[i].subPath[j].passStopList.stations[k].y, result.path[i].subPath[j].passStopList.stations[k].x);
 										}
+										
+										interj++;
 									}
 								}
 							}
@@ -104,14 +120,11 @@
 						// Show Daum Map
 						var container = document.getElementById('map');
 						var options = {
-							center: new daum.maps.LatLng(syVal, sxVal),
+							center: startPath[0],
 							level: 3
 						};
 				
 						var map = new daum.maps.Map(container, options);
-						
-						var pos1 = new daum.maps.LatLng(syVal, sxVal);
-						var pos2 = new daum.maps.LatLng(eyVal, exVal);
 						
 						var image = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png';
 						var imageSize = new daum.maps.Size(35, 35);
@@ -121,22 +134,22 @@
 						
 						var marker1 = new daum.maps.Marker({
 							map: map,
-						    position: pos1,
+						    position: startPath[0],
 						    image: image1
 						});
 						var marker2 = new daum.maps.Marker({
 							map: map,
-						    position: pos2,
+						    position: endPath[0],
 						    image: image2
 						});
 						
-						map.setCenter(pos1);
+						map.setCenter(startPath[0]);
 						
 						
 						// Show Line : (syVal, sxVal) -> (start station y-axis, start station x-axis) -> (intermediate station y-axis, intermediate station x-axis)
 						//             -> (destination station y-axis, destination station x-axis) -> (eyVal, exVal)
 						
-						var linePath = [pos1, pos2];
+						var linePath = startPath.concat(intermediatePath[0][0]).concat(endPath);
 						
 						var polyline = new daum.maps.Polyline({
 						    path: linePath,
@@ -147,6 +160,9 @@
 						});
 						
 						polyline.setMap(map);
+						
+						
+						console.log(intermediatePath);
 					}
 				}
 			}
