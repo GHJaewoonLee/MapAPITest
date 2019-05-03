@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Daum</title>
+		<style type="text/css">
+			.box {
+				width: 800px;
+				height: AUTO;
+				border: 1px solid green;
+				border-radius: 5px;
+				padding: 15px;
+				margin: 15px;
+				overflow-y: scroll;
+			}
+		</style>
+		<script>
+			var site = "https://api.odsay.com/v1/api/";
+			var okey = "sIq59IU6tz/SecRuKDsmnGG0YOmNO2b8Xbv6HoKjAC0";
+			
+			function searchBusLaneAJAX() {
+				var sxVal = document.getElementById('sx').value;
+				var syVal = document.getElementById('sy').value;
+				var exVal = document.getElementById('ex').value;
+				var eyVal = document.getElementById('ey').value;
+
+				// Calculate BusLane
+				var xhr = new XMLHttpRequest();
+				var url = site+"searchPubTransPath?apiKey="+okey+"&lang=0&SX="+sxVal+"&SY="+syVal+"&EX="+exVal+"&EY="+eyVal+"&OPT=0&SearchType=0&SearchPathType=2";
+				xhr.open("GET", url, true);
+				xhr.send();
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						var resultObj = JSON.parse(xhr.responseText);
+						var result = resultObj.result;
+						
+						console.log(result);
+						
+						var str = "";
+						
+						if (result != null) {
+							str += "<div class='box'>";
+							str += "<p>검색 결과 구분 : " + result.searchType + "</p>";
+							str += "<p>직통 검색 결과 : " + ((result.outTrafficCheck == 0) ? "없음" : "있음") + "</p>";
+							str += "<p>버스 결과 수 : " + result.busCount + "</p>";
+							str += "<p>출발지 반경 : " + result.startRadius + "</p>";
+							str += "<p>도착지 반경 : " + result.endRadius + "</p>";
+							str += "<p>이동 거리 : " + result.pointDistance + "</p>";
+							
+							for (var i = 0; i < result.path.length; i++) {
+								str += "<p>---------------" + (i + 1) + "번째 경로---------------</p>"
+								str += "<p>" + (i + 1) + "번째 경로의 타입 : " + result.path[i].pathType + " (버스)</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 총 이동거리(도보 제외) : " + result.path[i].info.trafficDistance + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 총 도보 이동거리 : " + result.path[i].info.totalWalk + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 총 거리 : " + result.path[i].info.totalDistance + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 총 소요시간 : " + result.path[i].info.totalTime + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 총 요금 : " + result.path[i].info.payment + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 버스 환승 카운트 : " + result.path[i].info.busTransitCount + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 출발 정류장 : " + result.path[i].info.firstStartStation + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 도착 정류장 : " + result.path[i].info.lastEndStation + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 총 정류장 수 : " + result.path[i].info.totalStationCount + "</p>";
+								str += "<p>" + (i + 1) + "번째 경로의 보정 값 : " + result.path[i].info.mapObj + "</p>";
+								
+								for (var j = 0; j < result.path[i].subPath.length; j++) {
+									str += "<p>+++++++++++++++세부 경로 : " + (j + 1) + "+++++++++++++++</p>"
+									str += "<p>이동거리 : " + result.path[i].subPath[j].distance + "</p>";
+									str += "<p>이동 소요시간 : " + result.path[i].subPath[j].sectionTime + "</p>";
+									str += "<p>이동 수단 : " + result.path[i].subPath[j].trafficType + "</p>";
+									
+									if (result.path[i].subPath[j].trafficType == 2) {
+										str += "<p>이동 정류장 수 : " + result.path[i].subPath[j].stationCount + "</p>";
+										str += "<p>출발 정류장 ID : " + result.path[i].subPath[j].startID + "</p>";
+										str += "<p>출발 정류장 이름 : " + result.path[i].subPath[j].startName + "</p>";
+										str += "<p>출발 정류장 X 좌표 : " + result.path[i].subPath[j].startX + "</p>";
+										str += "<p>출발 정류장 Y 좌표 : " + result.path[i].subPath[j].startY + "</p>";
+										str += "<p>도착 정류장 ID : " + result.path[i].subPath[j].endID + "</p>";
+										str += "<p>도착 정류장 이름 : " + result.path[i].subPath[j].endName + "</p>";
+										str += "<p>도착 정류장 X 좌표 : " + result.path[i].subPath[j].endX + "</p>";
+										str += "<p>도착 정류장 Y 좌표 : " + result.path[i].subPath[j].endY + "</p>";
+										
+										for (var k = 0; k < result.path[i].subPath[j].lane.length; k++) {
+											str += "<p>===============버스 정보 : " + (k + 1) + "===============</p>";
+											str += "<p>버스 ID : " + result.path[i].subPath[j].lane[k].busID + "</p>";
+											str += "<p>버스 번호 : " + result.path[i].subPath[j].lane[k].busNo + "</p>";
+											str += "<p>버스 타입 : " + result.path[i].subPath[j].lane[k].type + "</p>";
+										}
+										
+										for (var k = 0; k < result.path[i].subPath[j].passStopList.stations.length; k++) {
+											str += "<p>***************경로 상세 : " + (k + 1) + "***************</p>";
+											str += "<p>순번 : " + (result.path[i].subPath[j].passStopList.stations[k].index + 1) + "</p>";
+											str += "<p>정류장 ID : " + result.path[i].subPath[j].passStopList.stations[k].stationID + "</p>";
+											str += "<p>정류장 이름 : " + result.path[i].subPath[j].passStopList.stations[k].stationName + "</p>";
+											str += "<p>정류장 X 좌표 : " + result.path[i].subPath[j].passStopList.stations[k].x + "</p>";
+											str += "<p>정류장 Y 좌표 : " + result.path[i].subPath[j].passStopList.stations[k].y + "</p>";
+										}
+									}
+								}
+							}
+						}
+						
+						document.getElementById("resultDiv").innerHTML = str;
+						
+						
+						// Show Daum Map
+						var container = document.getElementById('map');
+						var options = {
+							center: new daum.maps.LatLng(syVal, sxVal),
+							level: 3
+						};
+				
+						var map = new daum.maps.Map(container, options);
+						
+						var pos1 = new daum.maps.LatLng(syVal, sxVal);
+						var pos2 = new daum.maps.LatLng(eyVal, exVal);
+						
+						var image = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png';
+						var imageSize = new daum.maps.Size(35, 35);
+						
+						var image1 = new daum.maps.MarkerImage(image, imageSize);
+						var image2 = new daum.maps.MarkerImage(image, imageSize);
+						
+						var marker1 = new daum.maps.Marker({
+							map: map,
+						    position: pos1,
+						    image: image1
+						});
+						var marker2 = new daum.maps.Marker({
+							map: map,
+						    position: pos2,
+						    image: image2
+						});
+						
+						map.setCenter(pos1);
+						
+						
+						// Show Line : (syVal, sxVal) -> (start station y-axis, start station x-axis) -> (intermediate station y-axis, intermediate station x-axis)
+						//             -> (destination station y-axis, destination station x-axis) -> (eyVal, exVal)
+						
+						var linePath = [pos1, pos2];
+						
+						var polyline = new daum.maps.Polyline({
+						    path: linePath,
+						    strokeWeight: 5,
+						    strokeColor: '#FFAE00',
+						    strokeOpacity: 1,
+						    strokeStyle: 'solid'
+						});
+						
+						polyline.setMap(map);
+					}
+				}
+			}
+		</script>
+	</head>
+	
+	<body>
+		<div id="map" style="width:500px; height:400px;"></div>
+		<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d388e7ffead01bfd5045bc218f8e8830"></script>
+
+		<div>
+			<label>출발 X좌표</label>
+			<input type="text" id="sx" value=""><br>
+			<label>출발 Y좌표</label>
+			<input type="text" id="sy" value=""><br>
+			<label>도착 X좌표</label>
+			<input type="text" id="ex" value=""><br>
+			<label>도착 Y좌표</label>
+			<input type="text" id="ey" value=""><br>
+			<button onclick="searchBusLaneAJAX();">click</button>
+		</div>
+		<div id="resultDiv">
+		</div>
+	</body>
+</html>
