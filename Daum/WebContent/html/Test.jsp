@@ -20,15 +20,8 @@
 				
 				$("#daylist").sortable({axis: "y", revert: false, revertDuration: 0, cancel: "#controlday"});
 			 	$(".list-group").sortable({axis: "y", revert: false, revertDuration: 0, cancel: ".list-group-item-1"});
+
 			 	
-				$(".placeclass").draggable({
-					connectToSortable: $(".list-group"),
-					helper: "clone",
-					revert: "invalid"
-				});
-				
-				
-				
 				var buttons = $("#controlday>button");
 				$(buttons[0]).click(function() {
 					var length = $(".list-group").length;
@@ -43,12 +36,41 @@
 						$("#daylist").append("<ul class='list-group ui-sortable-handle ui-sortable'><li class='list-group-item-1 ui-sortable-handle' style='background-color:steelblue; color: white; padding: 0.3rem;'>1일차</li></ul>");
 					}
 				});
+				
+				
+				var place = "";
+				var placebtn = $("[name='placebtn']");
+				$(placebtn).on('click', function(){
+					$("#daylist>ul>li.list-group-item-1").append("<button class='btn btn-sm btn-primary' name='addplacebtn'>+</button>");
+					place = $(this).parent().attr("value");
+					$(placebtn).remove();
+				});
+				
+				var planbtn = $("[name='planbtn']");
+				$(planbtn).on('click', function(){
+					$(this).parent().remove();
+				});
+				
+
+				var addplacebtn = $("#daylist>ul>li.list-group-item-1");
+				$(addplacebtn).on('click', $("[name='addplacebtn']"), function(event){
+					event.stopPropagation();
+					$(this).parent().append("<li class='list-group-item ui-sortable-handle' style='padding: 0.3rem;' value='" + place + "'>" + place + "<button class='btn btn-sm btn-primary' name='planbtn'>-</button></li>");
+					$(addplacebtn).off();
+					$("[name='addplacebtn']").off();
+					$("[name='addplacebtn']").remove();
+					$(".placeclass>li.list-group-item").append("<button class='btn btn-sm btn-primary' name='placebtn'>+</button>");
+				});
 			});
-			
 		</script>
+
 		<style>
 			.list-group {
 				margin-bottom: 0.5rem;
+			}
+			
+			button[name="placebtn"], button[name="planbtn"], button[name="addplacebtn"] {
+				float: right;
 			}
 		</style>
 	</head>
@@ -66,18 +88,18 @@
 
 						<ul class="list-group">
 							<li class="list-group-item-1" style="background-color:steelblue; color: white; padding: 0.3rem;">1일차</li>
-							<li class="list-group-item" style="padding: 0.3rem;">명동</li>
-							<li class="list-group-item" style="padding: 0.3rem;">인사동</li>
+							<li class="list-group-item" style="padding: 0.3rem;" value="명동">명동<button class="btn btn-sm btn-primary" name="planbtn">-</button></li>
+							<li class="list-group-item" style="padding: 0.3rem;" value="인사동">인사동<button class="btn btn-sm btn-primary" name="planbtn">-</button></li>
 						</ul>
 						<ul class="list-group">
 							<li class="list-group-item-1" style="background-color:steelblue; color: white; padding: 0.3rem;">2일차</li>
-							<li class="list-group-item" style="padding: 0.3rem;">호수공원</li>
-							<li class="list-group-item" style="padding: 0.3rem;">종로</li>
+							<li class="list-group-item" style="padding: 0.3rem;" value="호수공원">호수공원<button class="btn btn-sm btn-primary" name="planbtn">-</button></li>
+							<li class="list-group-item" style="padding: 0.3rem;" value="종로">종로<button class="btn btn-sm btn-primary" name="planbtn">-</button></li>
 						</ul>
 						<ul class="list-group">
 							<li class="list-group-item-1" style="background-color:steelblue; color: white; padding: 0.3rem;">3일차</li>
-							<li class="list-group-item" style="padding: 0.3rem;">광장시장</li>
-							<li class="list-group-item" style="padding: 0.3rem;">청계천</li>
+							<li class="list-group-item" style="padding: 0.3rem;" value="광장시장">광장시장<button class="btn btn-sm btn-primary" name="planbtn">-</button></li>
+							<li class="list-group-item" style="padding: 0.3rem;" value="청계천">청계천<button class="btn btn-sm btn-primary" name="planbtn">-</button></li>
 						</ul>
 						
 					</div>
@@ -92,21 +114,6 @@
 												<select id="location" size="1" name="location">
 													<option value="서울" selected="selected">서울
 													<option value="경기">경기
-													<option value="강원">강원
-													<option value="충북">충북
-													<option value="충남">충남
-													<option value="전북">전북
-													<option value="전남">전남
-													<option value="경북">경북
-													<option value="경남">경남
-													<option value="세종">세종
-													<option value="부산">부산
-													<option value="대구">대구
-													<option value="인천">인천
-													<option value="광주">광주
-													<option value="대전">대전
-													<option value="울산">울산
-													<option value="제주">제주
 												</select>
 											</td>
 											<td><input type="text" class="form-control" id="place" name="place" value="" placeholder=""></input></td>
@@ -120,92 +127,21 @@
 										<tr>
 											<td>
 												<ul class="placeclass">
-<!-- 													<button type="button" class="btn" value="명동" style="display: inline; margin: 0;">+</button> -->
-													<li class="list-group-item" style="padding: 0.3rem;">명동</li>
+													<li class="list-group-item" style="padding: 0.3rem;" value="명동">명동<button class="btn btn-primary" name="placebtn">+</button></li>
 												</ul>
 											</td>
 										</tr>
 										<tr>
 											<td>
 												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">인사동</li>
+													<li class="list-group-item" style="padding: 0.3rem;" value="인사동">인사동<button class="btn btn-primary" name="placebtn">+</button></li>
 												</ul>
 											</td>
 										</tr>
 										<tr>
 											<td>
 												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">N 남산 타워</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">이태원</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">호수공원</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">종로</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">광장시장</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">청계천</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">청계천</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">청계천</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">청계천</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">청계천</li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;">청계천</li>
+													<li class="list-group-item" style="padding: 0.3rem;" value="N 남산 타워">N 남산 타워<button class="btn btn-primary" name="placebtn">+</button></li>
 												</ul>
 											</td>
 										</tr>
