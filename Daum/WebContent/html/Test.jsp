@@ -61,6 +61,12 @@
 					$("[name='addplacebtn']").remove();
 					$(".placeclass>li.list-group-item").append("<button class='btn btn-sm btn-primary' name='placebtn'>+</button>");
 				});
+				
+				// 도중에 새로 만들어진 X일차 에서도 add가 되도록
+				// 도중에 새로 추가된 항목에 대해서 delete가 되도록
+				// 관광지 추가 후에도 다시 추가가 가능하도록
+				
+				// X일차 항목이 sort 되었을 때 일차를 다시 재조정 하는 기능 추가 필요
 			});
 		</script>
 
