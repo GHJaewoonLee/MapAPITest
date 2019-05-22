@@ -39,32 +39,24 @@
 				
 				
 				var place = "";
-				var placebtn = $("[name='placebtn']");
-				$(placebtn).on('click', function(){
+				$("#tablebody").on('click', "tr>td>ul>li>button[name='placebtn']", function(){
 					$("#daylist>ul>li.list-group-item-1").append("<button class='btn btn-sm btn-primary' name='addplacebtn'>+</button>");
 					place = $(this).parent().attr("value");
-					$(placebtn).remove();
+					$("#tablebody>tr>td>ul>li>button[name='placebtn']").remove();
+					return false;
 				});
 				
-				var planbtn = $("[name='planbtn']");
-				$(planbtn).on('click', function(){
+				$("#daylist").on('click', "ul>li>button[name='planbtn']", function(){
 					$(this).parent().remove();
+					return false;
 				});
 				
-
-				var addplacebtn = $("#daylist>ul>li.list-group-item-1");
-				$(addplacebtn).on('click', $("[name='addplacebtn']"), function(event){
-					event.stopPropagation();
-					$(this).parent().append("<li class='list-group-item ui-sortable-handle' style='padding: 0.3rem;' value='" + place + "'>" + place + "<button class='btn btn-sm btn-primary' name='planbtn'>-</button></li>");
-					$(addplacebtn).off();
-					$("[name='addplacebtn']").off();
+				$("#daylist").on('click', "ul>li.list-group-item-1>button[name='addplacebtn']", function() {
+					$(this).parent().parent().append("<li class='list-group-item ui-sortable-handle' style='padding: 0.3rem;' value='" + place + "'>" + place + "<button class='btn btn-sm btn-primary' name='planbtn'>-</button></li>");
 					$("[name='addplacebtn']").remove();
 					$(".placeclass>li.list-group-item").append("<button class='btn btn-sm btn-primary' name='placebtn'>+</button>");
-				});
-				
-				// 도중에 새로 만들어진 X일차 에서도 add가 되도록
-				// 도중에 새로 추가된 항목에 대해서 delete가 되도록
-				// 관광지 추가 후에도 다시 추가가 가능하도록
+					return false;
+				}); 
 				
 				// X일차 항목이 sort 되었을 때 일차를 다시 재조정 하는 기능 추가 필요
 			});
@@ -77,6 +69,9 @@
 			
 			button[name="placebtn"], button[name="planbtn"], button[name="addplacebtn"] {
 				float: right;
+				width: 2rem;
+				height : 2rem;
+				text-align: center;
 			}
 		</style>
 	</head>
@@ -86,7 +81,6 @@
 				<div class="row">
 					<div id="daylist" class="col-sm-2">
 						<div id="controlday">
-							
 							<button type="button" class="btn mr-4 btn-outline-primary">+</button>
 							<button type="button" class="btn btn-outline-primary">-</button>
 							<pre><br></pre>
