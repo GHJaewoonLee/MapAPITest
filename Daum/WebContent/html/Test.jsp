@@ -60,6 +60,10 @@
 				});
 				
 				
+// 				$("#daylist").on('click', "ul>li.list-group-item-1", function() {
+// 					alert("sdfsdfsdf");
+// 				});
+				
 				var place = "";
 				$("#tablebody").on('click', "tr>td>ul>li>button[name='placebtn']", function(){
 					$("#daylist>ul>li.list-group-item-1").append("<button class='btn btn-sm btn-primary' name='addplacebtn'>+</button>");
