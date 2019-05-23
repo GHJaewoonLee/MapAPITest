@@ -18,8 +18,30 @@
 		<script type="text/javascript">
 			$(document).ready(function() {
 				
-				$("#daylist").sortable({axis: "y", revert: false, revertDuration: 0, cancel: "#controlday"});
-			 	$(".list-group").sortable({axis: "y", revert: false, revertDuration: 0, cancel: ".list-group-item-1"});
+				function sortlist() {
+					var lists = $(".list-group");
+					var length = lists.length;
+					
+					for (var i = 0; i < length; i++) {
+						$(lists[i]).find(".list-group-item-1").text((i+1) + '일차');
+					}
+				}
+				
+				$("#daylist").sortable({
+					axis: "y",
+					revert: false,
+					revertDuration: 0,
+					cancel: "#controlday",
+					update: function(event, ui) {
+						sortlist();
+					}
+				});
+			 	$(".list-group").sortable({
+			 		axis: "y",
+			 		revert: false,
+			 		revertDuration: 0,
+			 		cancel: ".list-group-item-1"
+		 		});
 
 			 	
 				var buttons = $("#controlday>button");
@@ -56,9 +78,7 @@
 					$("[name='addplacebtn']").remove();
 					$(".placeclass>li.list-group-item").append("<button class='btn btn-sm btn-primary' name='placebtn'>+</button>");
 					return false;
-				}); 
-				
-				// X일차 항목이 sort 되었을 때 일차를 다시 재조정 하는 기능 추가 필요
+				});
 			});
 		</script>
 
@@ -101,7 +121,6 @@
 							<li class="list-group-item" style="padding: 0.3rem;" value="광장시장">광장시장<button class="btn btn-sm btn-primary" name="planbtn">-</button></li>
 							<li class="list-group-item" style="padding: 0.3rem;" value="청계천">청계천<button class="btn btn-sm btn-primary" name="planbtn">-</button></li>
 						</ul>
-						
 					</div>
 					
 					<div class="col-sm-4">
@@ -135,13 +154,6 @@
 											<td>
 												<ul class="placeclass">
 													<li class="list-group-item" style="padding: 0.3rem;" value="인사동">인사동<button class="btn btn-primary" name="placebtn">+</button></li>
-												</ul>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<ul class="placeclass">
-													<li class="list-group-item" style="padding: 0.3rem;" value="N 남산 타워">N 남산 타워<button class="btn btn-primary" name="placebtn">+</button></li>
 												</ul>
 											</td>
 										</tr>
